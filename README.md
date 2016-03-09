@@ -1,2 +1,2 @@
 # LabyrinthSolver
-Java Algorithm for solving mazes - Insper 2016
+Java algorithm for solving mazes - Insper 2016
