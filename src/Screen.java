@@ -48,22 +48,22 @@ public class Screen extends JPanel implements KeyListener, ActionListener{
 		this.width = this.labyrinth[0].length;
 		this.height = this.labyrinth.length;
 		
-		this.lab = new boolean[height][width];
+		this.lab = new boolean[this.height][this.width];
+		for(int i=0; i < this.height; i++) {
+			  for(int j=0; j < this.width; j++) {
+				  this.lab[i][j]=this.labyrinth[i][j];
+			  }
+		}
 		
-//		for(int i = 0; i < this.width; i++) {
-//			for(int j = 0; i < this.height; j++) {
-//				this.lab[i][j] = this.labyrinth[i][j];
-//			}
-//		}
 		stack.push(new Crumb(0,0));
 		
 		setPreferredSize(new Dimension(this.width * CELL_SIZE, this.height * CELL_SIZE));
 		
-		endX = CELL_SIZE * width - CELL_SIZE;
-		endY = CELL_SIZE * height - CELL_SIZE;
+		endX = this.width * CELL_SIZE - CELL_SIZE;
+		endY = this.height * CELL_SIZE - CELL_SIZE;
 		meX  = 0;
 		meY  = 0;
-		pcX  = CELL_SIZE * width - CELL_SIZE;
+		pcX  = 0;
 		pcY  = 0;
 		
 		imageMe = new ImageIcon(getClass().getResource("/img/me.png")).getImage();
@@ -71,7 +71,7 @@ public class Screen extends JPanel implements KeyListener, ActionListener{
 		imageEnd = new ImageIcon(getClass().getResource("/img/end.png")).getImage();
 		
 		
-		labyrinth[pcY/CELL_SIZE][pcX/CELL_SIZE] = false;
+		lab[pcY/CELL_SIZE][pcX/CELL_SIZE] = false;
 		timer.start();
 		
 	}
@@ -83,7 +83,11 @@ public class Screen extends JPanel implements KeyListener, ActionListener{
 			for(int j = 0; j < this.width; j++) {
 				int x = j * CELL_SIZE;
 
-				if(labyrinth[i][j]) {
+				if(!lab[i][j] && labyrinth[i][j]) {
+					g.setColor(Color.ORANGE);
+				}
+				
+				else if(labyrinth[i][j]) {
 					g.setColor(Color.WHITE);
 				}
 				else {
@@ -155,12 +159,19 @@ public class Screen extends JPanel implements KeyListener, ActionListener{
 		int x = pcX / CELL_SIZE;
 		int y = pcY / CELL_SIZE;
 		try {
+			if(pcX == endX && pcY == endY){
+				System.out.println("Perdestes!");
+				timer.stop();
+			} else if(meX == endX && meY == endY) {
+				System.out.println("Ganhastes!");
+				timer.stop();
+			}
 			Crumb crumb = stack.peek();
 					
 			if(crumb.getPasses() == 0) {
 				//Verifica casa acima do bot
-				if(y > 0 && labyrinth[y-1][x]) {
-					labyrinth[y][x] = false;
+				if(y > 0 && lab[y-1][x]) {
+					lab[y][x] = false;
 					y--;
 					stack.push(new Crumb(x, y));
 					repaint();
@@ -170,8 +181,8 @@ public class Screen extends JPanel implements KeyListener, ActionListener{
 					
 			else if(crumb.getPasses() == 1) {
 				//Verifica casa à direita do bot
-				if(x < (width - 1) && labyrinth[y][x+1]) {
-					labyrinth[y][x] = false;
+				if(x < (width - 1) && lab[y][x+1]) {
+					lab[y][x] = false;
 					x++;
 					stack.push(new Crumb(x, y));
 					repaint();
@@ -181,8 +192,8 @@ public class Screen extends JPanel implements KeyListener, ActionListener{
 					
 			else if(crumb.getPasses() == 2) {
 				//Verifica casa abaixo do bot
-				if(y < (height - 1) && labyrinth[y+1][x]) {
-					labyrinth[y][x] = false;
+				if(y < (height - 1) && lab[y+1][x]) {
+					lab[y][x] = false;
 					y++;
 					stack.push(new Crumb(x, y));
 					repaint();
@@ -192,8 +203,8 @@ public class Screen extends JPanel implements KeyListener, ActionListener{
 				
 			else if(crumb.getPasses() == 3) {
 				//Verifica casa à esquerda do bot
-				if(x > 0 && labyrinth[y][x-1]) {
-					labyrinth[y][x] = false;
+				if(x > 0 && lab[y][x-1]) {
+					lab[y][x] = false;
 					x--;
 					stack.push(new Crumb(x, y));
 					repaint();
@@ -203,20 +214,19 @@ public class Screen extends JPanel implements KeyListener, ActionListener{
 					
 			else if(crumb.getPasses() == 4) {
 				//Retira Crumb da lista
-				
-				labyrinth[y][x] = false;
+				lab[y][x] = false;
 				stack.pop();
 				x = stack.peek().getX();
 				y = stack.peek().getY();
 				repaint();
 			}
-					
+			
+			//Converter coordenadas para a escala da interface
 			pcY = y * CELL_SIZE;
 			pcX = x * CELL_SIZE;
 					
 		} catch(EmptyStackException e) {
-			//Do nothing
+			System.out.println("Acabou!");
 		}
 	}
-
 }
