@@ -126,9 +126,11 @@ public class Screen extends JPanel implements KeyListener, ActionListener {
 
     	// Se a tecla apertada foi a seta para a direita...
     	if(key == KeyEvent.VK_RIGHT) {
-    		if(meX != (this.width - 1) && c[y][x+1]) {
-    			meX += CELL_SIZE;
-    			repaint();
+    		if(x+1 < width) {
+    			if(meX != (this.width - 1) && c[y][x+1]) {
+    				meX += CELL_SIZE;
+    				repaint();
+    			}
     		}
     	}
     	
@@ -142,9 +144,11 @@ public class Screen extends JPanel implements KeyListener, ActionListener {
     	
     	// Se a tecla apertada foi a seta para baixo...
     	if(key == KeyEvent.VK_DOWN) {
-    		if(meY != (this.height - 1) && c[y+1][x]) {
-    			meY += CELL_SIZE;
-    			repaint();
+    		if(y+1 < height) {
+    			if(meY != (this.height - 1) && c[y+1][x]) {
+    				meY += CELL_SIZE;
+    				repaint();
+    			}
     		}
     	}
 	}
