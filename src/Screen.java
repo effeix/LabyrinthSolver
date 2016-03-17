@@ -13,15 +13,15 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-public class Screen extends JPanel implements KeyListener, ActionListener{
+public class Screen extends JPanel implements KeyListener, ActionListener {
 	
 	private static final long serialVersionUID = 1L;
 	private final static int CELL_SIZE = 25;
 	
+	//Dimensões do labirinto
 	private int width;
 	private int height;
 	
-	private boolean[][] labyrinth;
 	private boolean[][] lab;
 	
 	// Sprites para os personagens do labirinto (quadrado verde, quadrado vermelho e quadrado roxo) 
@@ -41,17 +41,22 @@ public class Screen extends JPanel implements KeyListener, ActionListener{
 	Stack<Crumb> stack = new Stack<>();
 	
 	//Clock para atualizar o script
-	Timer timer = new Timer(10, this);
+	private int speed = 30;
+	Timer timer = new Timer(speed, this);
+	
+	//Ler arquivo labyrinth.txt
+	FileHandler fileHandler = new FileHandler();
+	boolean[][] c = fileHandler.getC();
 	
 	public Screen(boolean[][] labyrinth) {
-		this.labyrinth = labyrinth;
-		this.width = this.labyrinth[0].length;
-		this.height = this.labyrinth.length;
+		this.c = labyrinth;
+		this.width = this.c[0].length;
+		this.height = this.c.length;
 		
 		this.lab = new boolean[this.height][this.width];
 		for(int i=0; i < this.height; i++) {
 			  for(int j=0; j < this.width; j++) {
-				  this.lab[i][j]=this.labyrinth[i][j];
+				  this.lab[i][j]=this.c[i][j];
 			  }
 		}
 		
@@ -83,11 +88,11 @@ public class Screen extends JPanel implements KeyListener, ActionListener{
 			for(int j = 0; j < this.width; j++) {
 				int x = j * CELL_SIZE;
 
-				if(!lab[i][j] && labyrinth[i][j]) {
+				if(!lab[i][j] && c[i][j]) {
 					g.setColor(Color.ORANGE);
 				}
 				
-				else if(labyrinth[i][j]) {
+				else if(c[i][j]) {
 					g.setColor(Color.WHITE);
 				}
 				else {
@@ -113,7 +118,7 @@ public class Screen extends JPanel implements KeyListener, ActionListener{
 
     	// Se a tecla apertada foi a seta para a esquerda...
     	if(key == KeyEvent.VK_LEFT) {
-    		if(meX != 0 && labyrinth[y][x-1]) {
+    		if(meX != 0 && c[y][x-1]) {
     			meX -= CELL_SIZE;
     			repaint();
     		}
@@ -121,7 +126,7 @@ public class Screen extends JPanel implements KeyListener, ActionListener{
 
     	// Se a tecla apertada foi a seta para a direita...
     	if(key == KeyEvent.VK_RIGHT) {
-    		if(meX != (this.width - 1) && labyrinth[y][x+1]) {
+    		if(meX != (this.width - 1) && c[y][x+1]) {
     			meX += CELL_SIZE;
     			repaint();
     		}
@@ -129,7 +134,7 @@ public class Screen extends JPanel implements KeyListener, ActionListener{
     	
     	// Se a tecla apertada foi a seta para cima...
     	if(key == KeyEvent.VK_UP) {
-    		if(meY != 0 && labyrinth[y-1][x]) {
+    		if(meY != 0 && c[y-1][x]) {
     			meY -= CELL_SIZE;
     			repaint();
     		}
@@ -137,7 +142,7 @@ public class Screen extends JPanel implements KeyListener, ActionListener{
     	
     	// Se a tecla apertada foi a seta para baixo...
     	if(key == KeyEvent.VK_DOWN) {
-    		if(meY != (this.height - 1) && labyrinth[y+1][x]) {
+    		if(meY != (this.height - 1) && c[y+1][x]) {
     			meY += CELL_SIZE;
     			repaint();
     		}
@@ -224,7 +229,7 @@ public class Screen extends JPanel implements KeyListener, ActionListener{
 			//Converter coordenadas para a escala da interface
 			pcY = y * CELL_SIZE;
 			pcX = x * CELL_SIZE;
-					
+			
 		} catch(EmptyStackException e) {
 			System.out.println("Acabou!");
 		}
